@@ -1,0 +1,63 @@
+<% content_for :title, "Join #{@trip.name} — TripSplit" %>
+
+<div class="container ts-shell ts-auth-wrap">
+  <div class="row justify-content-center w-100">
+    <div class="col-12 col-lg-7 col-xl-6">
+
+      <div class="ts-card ts-fade-in overflow-hidden">
+        <div class="ts-hero p-4 text-center">
+          <div class="ts-hero-content">
+            <span class="ts-avatar ts-avatar-lg mx-auto bg-white bg-opacity-25 mb-3"><i class="bi bi-airplane-fill text-white"></i></span>
+            <h2 class="fw-bold text-white mb-1"><%= @trip.name %></h2>
+            <p class="text-white-50 mb-0"><i class="bi bi-geo-alt me-1"></i><%= @trip.destination.presence || "No destination set" %></p>
+          </div>
+        </div>
+
+        <div class="ts-card-body p-4 p-lg-5 text-center">
+          <p class="text-muted mb-1">Trip organized by</p>
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-4">
+            <span class="ts-avatar"><%= @trip.creator.name.to_s.first.to_s.upcase %></span>
+            <h5 class="mb-0 fw-bold"><%= @trip.creator.name %></h5>
+          </div>
+
+          <% if @trip.users.include?(current_user) %>
+            <div class="alert alert-success d-flex align-items-center gap-2 justify-content-center mb-4">
+              <i class="bi bi-check-circle-fill"></i> You are already a member of this trip.
+            </div>
+            <%= link_to trip_path(@trip), class: "btn btn-primary btn-lg" do %>
+              <i class="bi bi-box-arrow-in-right me-1"></i> Go to Trip
+            <% end %>
+
+          <% else %>
+            <% if @join_request.nil? %>
+              <p class="text-muted mb-4">Request to join this trip and start splitting expenses with the group.</p>
+              <%= button_to "Request to Join",
+                    trip_join_requests_path(@trip),
+                    method: :post,
+                    class: "btn btn-primary btn-lg px-4" %>
+
+            <% elsif @join_request.pending? %>
+              <div class="alert alert-warning d-flex align-items-center gap-2 justify-content-center mb-0">
+                <i class="bi bi-hourglass-split"></i> Your request is pending approval.
+              </div>
+
+            <% elsif @join_request.accepted? %>
+              <div class="alert alert-success d-flex align-items-center gap-2 justify-content-center mb-4">
+                <i class="bi bi-check-circle-fill"></i> Your request has been accepted.
+              </div>
+              <%= link_to trip_path(@trip), class: "btn btn-primary btn-lg" do %>
+                <i class="bi bi-box-arrow-in-right me-1"></i> Go to Trip
+              <% end %>
+
+            <% elsif @join_request.rejected? %>
+              <div class="alert alert-danger d-flex align-items-center gap-2 justify-content-center mb-0">
+                <i class="bi bi-x-circle-fill"></i> Your request was rejected.
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

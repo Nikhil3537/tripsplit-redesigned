@@ -1,0 +1,128 @@
+<%= form_with model: [@trip, @expense] do |form| %>
+
+  <% if @expense.errors.any? %>
+    <div class="alert alert-danger d-flex align-items-start gap-2 mb-4">
+      <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+      <div>
+        <strong><%= pluralize(@expense.errors.count, "error") %> prevented this expense from being saved:</strong>
+        <ul class="mb-0 mt-1 ps-3">
+          <% @expense.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="ts-card mb-4">
+    <div class="ts-card-header">
+      <h5 class="mb-0"><i class="bi bi-receipt text-primary me-2"></i>Expense Details</h5>
+    </div>
+    <div class="ts-card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <%= form.label :title, class: "form-label" %>
+          <div class="ts-input-group">
+            <i class="bi bi-tag ts-input-icon"></i>
+            <%= form.text_field :title, class: "form-control", placeholder: "Dinner, Hotel, Petrol..." %>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <%= form.label :amount, class: "form-label" %>
+          <div class="ts-input-group">
+            <i class="bi bi-currency-rupee ts-input-icon"></i>
+            <%= form.number_field :amount, step: 0.01, min: 0, id: "expense_amount", class: "form-control", placeholder: "0.00" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <%= form.label :category, class: "form-label" %>
+          <%= form.select :category,
+                [ "🍴 Food", "🏨 Hotel", "⛽ Fuel", "🚕 Transport", "🛍 Shopping", "🎉 Entertainment", "📦 Other" ],
+                {}, class: "form-select" %>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <%= form.label :spent_on, class: "form-label" %>
+          <%= form.date_field :spent_on, class: "form-control" %>
+        </div>
+      </div>
+
+      <div class="mb-1">
+        <%= form.label :description, class: "form-label" %>
+        <%= form.text_area :description, rows: 3, class: "form-control", placeholder: "Optional description..." %>
+      </div>
+    </div>
+  </div>
+
+  <% if @expense.new_record? %>
+    <!-- Split Members -->
+    <div class="ts-card mb-4">
+      <div class="ts-card-header">
+        <h5 class="mb-0"><i class="bi bi-people-fill text-success me-2"></i>Split Between</h5>
+        <span class="ts-chip ts-chip-muted"><%= @trip.users.count %> members</span>
+      </div>
+      <div class="ts-card-body">
+        <div class="row g-3">
+          <% @trip.users.each do |user| %>
+            <div class="col-6 col-md-4 col-lg-3">
+              <label class="ts-member-card d-block p-3 h-100">
+                <div class="form-check">
+                  <%= check_box_tag "expense[user_ids][]", user.id, true, id: "user_#{user.id}", class: "form-check-input ts-member-checkbox" %>
+                </div>
+                <div class="text-center pt-2">
+                  <span class="ts-member-avatar"><%= user.name.to_s.first.to_s.upcase %></span>
+                  <div class="fw-semibold small"><%= user.name %></div>
+                </div>
+              </label>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Split Preview -->
+    <div class="ts-card mb-4">
+      <div class="ts-card-header">
+        <h5 class="mb-0"><i class="bi bi-calculator text-warning me-2"></i>Split Preview</h5>
+      </div>
+      <div class="ts-card-body text-center">
+        <p class="text-muted mb-1">Each selected member pays</p>
+        <h1 class="fw-bold text-success mb-0">₹<span id="split_amount">0.00</span></h1>
+      </div>
+    </div>
+  <% else %>
+    <!-- Existing split breakdown (read-only — splits are set when the expense is created) -->
+    <% if @expense.expense_splits.any? %>
+      <div class="ts-card mb-4">
+        <div class="ts-card-header">
+          <h5 class="mb-0"><i class="bi bi-people-fill text-success me-2"></i>Current Split</h5>
+          <span class="ts-chip ts-chip-muted"><%= pluralize(@expense.expense_splits.count, "member") %></span>
+        </div>
+        <ul class="list-group list-group-flush">
+          <% @expense.expense_splits.each do |split| %>
+            <li class="list-group-item d-flex align-items-center justify-content-between px-4 py-3 border-0 border-bottom">
+              <div class="d-flex align-items-center gap-3">
+                <span class="ts-avatar"><%= split.user.name.to_s.first.to_s.upcase %></span>
+                <strong><%= split.user.name %></strong>
+              </div>
+              <span class="fw-bold">₹<%= number_with_delimiter(split.amount) %></span>
+            </li>
+          <% end %>
+        </ul>
+        <div class="ts-card-body">
+          <p class="small text-muted mb-0"><i class="bi bi-info-circle me-1"></i>The split is set when an expense is created and isn't changed by editing these details.</p>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="d-flex justify-content-end gap-2">
+    <%= link_to "Cancel", trip_expenses_path(@trip), class: "btn btn-light" %>
+    <%= form.submit "Save Expense", class: "btn btn-primary" %>
+  </div>
+
+<% end %>

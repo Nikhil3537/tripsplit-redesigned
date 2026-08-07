@@ -1,0 +1,50 @@
+<%= form_with model: @trip, local: true do |form| %>
+
+  <% if @trip.errors.any? %>
+    <div class="alert alert-danger d-flex align-items-start gap-2 mb-4">
+      <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+      <div>
+        <strong><%= pluralize(@trip.errors.count, "error") %> prevented this trip from being saved:</strong>
+        <ul class="mb-0 mt-1 ps-3">
+          <% @trip.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <div class="ts-input-group">
+      <i class="bi bi-signpost-2 ts-input-icon"></i>
+      <%= form.text_field :name, class: "form-control", placeholder: "e.g. Goa Trip 2026", required: true, autofocus: true %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :destination, class: "form-label" %>
+    <div class="ts-input-group">
+      <i class="bi bi-geo-alt ts-input-icon"></i>
+      <%= form.text_field :destination, class: "form-control", placeholder: "e.g. Goa, India" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= form.label :start_date, class: "form-label" %>
+      <%= form.date_field :start_date, class: "form-control" %>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <%= form.label :end_date, class: "form-label" %>
+      <%= form.date_field :end_date, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-4">
+    <%= link_to "Cancel", (@trip.persisted? ? trip_path(@trip) : trips_path), class: "btn btn-light" %>
+    <%= form.submit (@trip.persisted? ? "Update Trip" : "Create Trip"), class: "btn btn-primary" %>
+  </div>
+
+<% end %>

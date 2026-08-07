@@ -1,0 +1,83 @@
+<% content_for :title, "Expenses — #{@trip.name} — TripSplit" %>
+
+<div class="container ts-shell ts-page">
+
+  <div class="mb-3">
+    <%= link_to trip_path(@trip), class: "text-decoration-none small fw-bold text-muted" do %>
+      <i class="bi bi-arrow-left me-1"></i> Back to <%= @trip.name %>
+    <% end %>
+  </div>
+
+  <div class="ts-page-header">
+    <div>
+      <p class="ts-eyebrow">Expense History</p>
+      <h1 class="ts-page-title">Expenses</h1>
+      <p class="ts-page-subtitle"><%= pluralize(@expenses.count, "expense") %> · ₹<%= number_with_delimiter(@expenses.sum(:amount)) %> total</p>
+    </div>
+    <%= link_to new_trip_expense_path(@trip), class: "btn btn-primary" do %>
+      <i class="bi bi-plus-lg me-1"></i> Add Expense
+    <% end %>
+  </div>
+
+  <% if @expenses.any? %>
+    <div class="ts-table-wrap">
+      <table class="table ts-table ts-table-responsive-cards mb-0">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Paid By</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @expenses.order(spent_on: :desc).each do |expense| %>
+            <tr>
+              <td data-label="Title">
+                <div class="d-flex align-items-center gap-2 justify-content-end justify-content-md-start">
+                  <span class="ts-metric-icon d-none d-md-flex" style="background: var(--ts-gradient-green); width:36px; height:36px; font-size:1rem;">
+                    <i class="bi bi-receipt"></i>
+                  </span>
+                  <strong><%= expense.title %></strong>
+                </div>
+              </td>
+              <td data-label="Category"><span class="ts-chip ts-chip-info"><%= expense.category %></span></td>
+              <td data-label="Paid By"><%= expense.payer.name %></td>
+              <td data-label="Amount"><span class="fw-bold text-success">₹<%= number_with_delimiter(expense.amount) %></span></td>
+              <td data-label="Date"><%= expense.spent_on %></td>
+              <td data-label="Actions">
+                <div class="d-flex gap-2 justify-content-end">
+                  <%= link_to trip_expense_path(@trip, expense), class: "btn btn-sm btn-light", title: "View" do %>
+                    <i class="bi bi-eye"></i>
+                  <% end %>
+                  <%= link_to edit_trip_expense_path(@trip, expense), class: "btn btn-sm btn-light", title: "Edit" do %>
+                    <i class="bi bi-pencil"></i>
+                  <% end %>
+                  <%= link_to trip_expense_path(@trip, expense),
+                        data: { turbo_method: :delete, turbo_confirm: "Delete this expense?" },
+                        class: "btn btn-sm btn-light text-danger", title: "Delete" do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="ts-card">
+      <div class="ts-empty">
+        <div class="ts-empty-icon"><i class="bi bi-receipt"></i></div>
+        <h5>No expenses yet</h5>
+        <p>Add the first expense for this trip to start splitting costs fairly.</p>
+        <%= link_to new_trip_expense_path(@trip), class: "btn btn-primary" do %>
+          <i class="bi bi-plus-lg me-1"></i> Add Expense
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+</div>

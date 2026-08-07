@@ -1,0 +1,162 @@
+<% content_for :title, "Final Settlement — #{@trip.name} — TripSplit" %>
+
+<% category_totals = @trip.expenses.group(:category).sum(:amount) %>
+<% total_expense = @trip.expenses.sum(:amount) %>
+<% pending_count = @trip.settlements.pending.count %>
+<% completed_count = @trip.settlements.completed.count %>
+
+<div class="container ts-shell ts-page">
+
+  <div class="ts-page-header">
+    <div>
+      <p class="ts-eyebrow">Trip Complete</p>
+      <h1 class="ts-page-title"><i class="bi bi-flag-fill text-danger me-2"></i>Final Settlement</h1>
+      <p class="ts-page-subtitle"><%= @trip.name %></p>
+    </div>
+    <span class="badge bg-dark fs-6 px-3 py-2"><%= @trip.status.capitalize %></span>
+  </div>
+
+  <!-- Trip summary -->
+  <div class="ts-card mb-4">
+    <div class="ts-card-header">
+      <h5 class="mb-0"><i class="bi bi-info-circle text-primary me-2"></i>Trip Summary</h5>
+    </div>
+    <div class="ts-card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="ts-metric-card">
+            <p class="text-uppercase text-muted small mb-1"><i class="bi bi-geo-alt me-1"></i>Destination</p>
+            <h6 class="fw-bold mb-0"><%= @trip.destination.presence || "—" %></h6>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="ts-metric-card">
+            <p class="text-uppercase text-muted small mb-1"><i class="bi bi-calendar-event me-1"></i>Start Date</p>
+            <h6 class="fw-bold mb-0"><%= @trip.start_date %></h6>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="ts-metric-card">
+            <p class="text-uppercase text-muted small mb-1"><i class="bi bi-calendar-check me-1"></i>End Date</p>
+            <h6 class="fw-bold mb-0"><%= @trip.end_date %></h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <%= link_to trip_path(@trip), class: "btn btn-light" do %>
+      <i class="bi bi-arrow-left me-1"></i> Back to Trip
+    <% end %>
+    <%= link_to final_settlement_pdf_trip_path(@trip), class: "btn btn-danger" do %>
+      <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Final Settlement PDF
+    <% end %>
+  </div>
+
+  <!-- Expense summary -->
+  <div class="ts-card mb-4">
+    <div class="ts-card-header">
+      <h5 class="mb-0"><i class="bi bi-receipt text-success me-2"></i>Expense Summary</h5>
+    </div>
+    <div class="ts-table-wrap ts-card-flush">
+      <table class="table ts-table ts-table-responsive-cards mb-0">
+        <thead>
+          <tr><th>Category</th><th>Total</th></tr>
+        </thead>
+        <tbody>
+          <% category_totals.each do |category, amount| %>
+            <tr>
+              <td data-label="Category"><span class="ts-chip ts-chip-info"><%= category %></span></td>
+              <td data-label="Total">₹<%= number_with_delimiter(amount) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="ts-card-body text-end">
+      <h4 class="fw-bold mb-0">Total Expense: <span class="text-success">₹<%= number_with_delimiter(total_expense) %></span></h4>
+    </div>
+  </div>
+
+  <!-- Member contributions -->
+  <div class="ts-card ts-card-flush mb-4">
+    <div class="ts-card-header">
+      <h5 class="mb-0"><i class="bi bi-people-fill text-info me-2"></i>Member Contributions</h5>
+    </div>
+    <ul class="list-group list-group-flush">
+      <% @trip.users.each do |member| %>
+        <li class="list-group-item d-flex align-items-center justify-content-between px-4 py-3 border-0 border-bottom">
+          <div class="d-flex align-items-center gap-3">
+            <span class="ts-avatar"><%= member.name.to_s.first.to_s.upcase %></span>
+            <strong><%= member.name %></strong>
+          </div>
+          <span class="fw-bold">₹<%= number_with_delimiter(@trip.expenses.where(payer: member).sum(:amount)) %></span>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <!-- Final settlements -->
+  <div class="ts-card mb-4">
+    <div class="ts-card-header">
+      <h5 class="mb-0"><i class="bi bi-arrow-left-right text-dark me-2"></i>Final Settlements</h5>
+    </div>
+    <div class="ts-table-wrap ts-card-flush">
+      <table class="table ts-table ts-table-responsive-cards mb-0">
+        <thead>
+          <tr><th>From</th><th>To</th><th>Amount</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <% @trip.settlements.each do |settlement| %>
+            <tr>
+              <td data-label="From"><%= settlement.payer.name %></td>
+              <td data-label="To"><%= settlement.receiver.name %></td>
+              <td data-label="Amount">₹<%= number_with_delimiter(settlement.amount) %></td>
+              <td data-label="Status">
+                <% if settlement.completed? %>
+                  <span class="ts-chip ts-chip-success"><i class="bi bi-check-circle-fill"></i> Completed</span>
+                <% else %>
+                  <span class="ts-chip ts-chip-warning"><i class="bi bi-hourglass-split"></i> Pending</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Summary stat cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="ts-stat-card ts-stat-blue text-center">
+        <div class="ts-stat-value mx-auto">₹<%= number_with_delimiter(total_expense) %></div>
+        <div class="ts-stat-label">Total Expense</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ts-stat-card ts-stat-warm text-center">
+        <div class="ts-stat-value mx-auto"><%= pending_count %></div>
+        <div class="ts-stat-label">Pending Settlements</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ts-stat-card ts-stat-green text-center">
+        <div class="ts-stat-value mx-auto"><%= completed_count %></div>
+        <div class="ts-stat-label">Completed Settlements</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <%= link_to trip_path(@trip), class: "btn btn-light me-2" do %>
+      <i class="bi bi-arrow-left me-1"></i> Back to Trip
+    <% end %>
+    <%= link_to final_settlement_pdf_trip_path(@trip), class: "btn btn-danger" do %>
+      <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
+    <% end %>
+  </div>
+
+</div>

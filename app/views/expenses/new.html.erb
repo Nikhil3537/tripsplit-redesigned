@@ -1,0 +1,25 @@
+<% content_for :title, "Add Expense — #{@trip.name} — TripSplit" %>
+
+<div class="container ts-shell ts-page">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-9">
+
+      <div class="mb-3">
+        <%= link_to trip_expenses_path(@trip), class: "text-decoration-none small fw-bold text-muted" do %>
+          <i class="bi bi-arrow-left me-1"></i> Back to Expenses
+        <% end %>
+      </div>
+
+      <div class="ts-page-header">
+        <div>
+          <p class="ts-eyebrow"><%= @trip.name %></p>
+          <h1 class="ts-page-title">Add Expense</h1>
+          <p class="ts-page-subtitle">Log a new cost and split it fairly among members.</p>
+        </div>
+      </div>
+
+      <%= render "form" %>
+
+    </div>
+  </div>
+</div>

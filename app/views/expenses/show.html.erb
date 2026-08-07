@@ -1,0 +1,79 @@
+<% content_for :title, "#{@expense.title} — TripSplit" %>
+
+<div class="container ts-shell ts-page">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+
+      <div class="mb-3">
+        <%= link_to trip_expenses_path(@trip), class: "text-decoration-none small fw-bold text-muted" do %>
+          <i class="bi bi-arrow-left me-1"></i> Back to Expenses
+        <% end %>
+      </div>
+
+      <div class="ts-card mb-4">
+        <div class="ts-card-header">
+          <div>
+            <span class="ts-chip ts-chip-info mb-2"><%= @expense.category %></span>
+            <h3 class="mb-0"><%= @expense.title %></h3>
+          </div>
+          <div class="text-end">
+            <div class="fw-bold text-success fs-3">₹<%= number_with_delimiter(@expense.amount) %></div>
+            <div class="small text-muted"><%= @expense.spent_on %></div>
+          </div>
+        </div>
+        <div class="ts-card-body">
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="ts-metric-card">
+                <p class="text-uppercase text-muted small mb-1"><i class="bi bi-person me-1"></i>Paid By</p>
+                <h6 class="fw-bold mb-0"><%= @expense.payer.name %></h6>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="ts-metric-card">
+                <p class="text-uppercase text-muted small mb-1"><i class="bi bi-people me-1"></i>Split Between</p>
+                <h6 class="fw-bold mb-0"><%= pluralize(@expense.expense_splits.count, "member") %></h6>
+              </div>
+            </div>
+          </div>
+
+          <% if @expense.description.present? %>
+            <div class="ts-soft-panel p-3 mb-1">
+              <p class="text-uppercase text-muted small mb-1">Description</p>
+              <p class="mb-0"><%= @expense.description %></p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="ts-card ts-card-flush mb-4">
+        <div class="ts-card-header">
+          <h5 class="mb-0">Split Breakdown</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+          <% @expense.expense_splits.each do |split| %>
+            <li class="list-group-item d-flex align-items-center justify-content-between px-4 py-3 border-0 border-bottom">
+              <div class="d-flex align-items-center gap-3">
+                <span class="ts-avatar"><%= split.user.name.to_s.first.to_s.upcase %></span>
+                <strong><%= split.user.name %></strong>
+              </div>
+              <span class="fw-bold">₹<%= number_with_delimiter(split.amount) %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2">
+        <%= link_to edit_trip_expense_path(@trip, @expense), class: "btn btn-primary" do %>
+          <i class="bi bi-pencil me-1"></i> Edit Expense
+        <% end %>
+        <%= link_to trip_expense_path(@trip, @expense),
+              data: { turbo_method: :delete, turbo_confirm: "Delete this expense?" },
+              class: "btn btn-outline-danger" do %>
+          <i class="bi bi-trash me-1"></i> Delete
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>

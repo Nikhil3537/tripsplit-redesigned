@@ -1,0 +1,104 @@
+<% content_for :title, "Settlements — #{@trip.name} — TripSplit" %>
+
+<% pending_count = @settlements.count { |s| !s.completed? } %>
+<% completed_count = @settlements.count(&:completed?) %>
+<% total_count = @settlements.count %>
+<% progress = total_count.zero? ? 0 : ((completed_count.to_f / total_count) * 100).round %>
+
+<div class="container ts-shell ts-page">
+
+  <div class="mb-3">
+    <%= link_to trip_path(@trip), class: "text-decoration-none small fw-bold text-muted" do %>
+      <i class="bi bi-arrow-left me-1"></i> Back to <%= @trip.name %>
+    <% end %>
+  </div>
+
+  <div class="ts-page-header">
+    <div>
+      <p class="ts-eyebrow">Settle Up</p>
+      <h1 class="ts-page-title">Settlements</h1>
+      <p class="ts-page-subtitle"><%= pluralize(total_count, "settlement") %> for this trip.</p>
+    </div>
+    <%= link_to trip_balances_path(@trip), class: "btn btn-light" do %>
+      <i class="bi bi-pie-chart-fill me-1"></i> View Balances
+    <% end %>
+  </div>
+
+  <% if total_count.positive? %>
+    <div class="ts-card ts-card-body mb-4">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="fw-bold">Settlement progress</span>
+        <span class="fw-bold text-success"><%= progress %>%</span>
+      </div>
+      <div class="progress mb-3">
+        <div class="progress-bar bg-success" role="progressbar" style="width: <%= progress %>%" aria-valuenow="<%= progress %>" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <div class="d-flex gap-3 flex-wrap">
+        <span class="ts-chip ts-chip-warning"><i class="bi bi-hourglass-split"></i> <%= pending_count %> pending</span>
+        <span class="ts-chip ts-chip-success"><i class="bi bi-check-circle-fill"></i> <%= completed_count %> completed</span>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @settlements.any? %>
+    <div class="ts-table-wrap">
+      <table class="table ts-table ts-table-responsive-cards mb-0">
+        <thead>
+          <tr>
+            <th>Payer</th>
+            <th>Receiver</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @settlements.each do |settlement| %>
+            <tr>
+              <td data-label="Payer">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="ts-mini-avatar" style="margin-left:0;"><%= settlement.payer.name.to_s.first.to_s.upcase %></span>
+                  <%= settlement.payer.name %>
+                </div>
+              </td>
+              <td data-label="Receiver">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-arrow-right text-muted"></i>
+                  <%= settlement.receiver.name %>
+                </div>
+              </td>
+              <td data-label="Amount"><span class="fw-bold">₹<%= number_with_delimiter(settlement.amount) %></span></td>
+              <td data-label="Status">
+                <% if settlement.completed? %>
+                  <span class="ts-chip ts-chip-success"><i class="bi bi-check-circle-fill"></i> Completed</span>
+                <% else %>
+                  <span class="ts-chip ts-chip-warning"><i class="bi bi-hourglass-split"></i> Pending</span>
+                <% end %>
+              </td>
+              <td data-label="Action">
+                <div class="text-md-end">
+                  <% unless settlement.completed? %>
+                    <%= button_to "Mark as Paid",
+                          trip_settlement_path(@trip, settlement),
+                          method: :patch,
+                          class: "btn btn-success btn-sm",
+                          form: { class: "d-inline" } %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="ts-card">
+      <div class="ts-empty">
+        <div class="ts-empty-icon"><i class="bi bi-arrow-left-right"></i></div>
+        <h5>No settlements yet</h5>
+        <p>Settlements are generated once balances need to be paid off between members.</p>
+      </div>
+    </div>
+  <% end %>
+
+</div>

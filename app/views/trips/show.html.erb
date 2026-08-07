@@ -1,0 +1,323 @@
+<% content_for :title, "#{@trip.name} — TripSplit" %>
+
+<% pending_requests = @trip.join_requests.where(status: :pending).includes(:user) %>
+<% is_owner = @trip.creator == current_user %>
+
+<div class="container ts-shell ts-page">
+
+  <div class="mb-3">
+    <%= link_to trips_path, class: "text-decoration-none small fw-bold text-muted" do %>
+      <i class="bi bi-arrow-left me-1"></i> Back to My Trips
+    <% end %>
+  </div>
+
+  <!-- Trip header -->
+  <div class="ts-hero mb-4">
+    <div class="ts-hero-content p-4 p-lg-5">
+      <div class="d-flex flex-wrap align-items-start justify-content-between gap-3">
+        <div>
+          <span class="badge rounded-pill bg-white text-dark px-3 py-2 mb-2">
+            <i class="bi bi-<%= @trip.active? ? 'lightning-charge-fill text-success' : 'flag-fill text-secondary' %> me-1"></i>
+            <%= @trip.status.capitalize %>
+          </span>
+          <h1 class="fw-bold text-white mb-1"><%= @trip.name %></h1>
+          <p class="text-white-50 mb-0">
+            <i class="bi bi-geo-alt me-1"></i><%= @trip.destination.presence || "No destination set" %>
+            &nbsp;·&nbsp;
+            <i class="bi bi-calendar3 me-1"></i><%= @trip.start_date %> – <%= @trip.end_date %>
+          </p>
+        </div>
+        <div class="ts-trip-avatars">
+          <% @trip.users.limit(6).each do |member| %>
+            <span class="ts-mini-avatar" style="border-color: rgba(255,255,255,0.5);" title="<%= member.name %>"><%= member.name.to_s.first.to_s.upcase %></span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav ts-tabs mb-4" id="tripTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#tab-overview" type="button" role="tab">
+        <i class="bi bi-grid-1x2 me-1"></i> Overview
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="members-tab" data-bs-toggle="tab" data-bs-target="#tab-members" type="button" role="tab">
+        <i class="bi bi-people me-1"></i> Members <span class="badge bg-secondary ms-1"><%= @trip.users.count %></span>
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#tab-expenses" type="button" role="tab">
+        <i class="bi bi-receipt me-1"></i> Expenses <span class="badge bg-secondary ms-1"><%= @trip.expenses.count %></span>
+      </button>
+    </li>
+    <% if is_owner %>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="requests-tab" data-bs-toggle="tab" data-bs-target="#tab-requests" type="button" role="tab">
+          <i class="bi bi-person-plus me-1"></i> Join Requests
+          <% if pending_requests.any? %><span class="badge bg-danger ms-1"><%= pending_requests.count %></span><% end %>
+        </button>
+      </li>
+    <% end %>
+  </ul>
+
+  <div class="tab-content">
+
+    <!-- ===================== OVERVIEW ===================== -->
+    <div class="tab-pane fade show active" id="tab-overview" role="tabpanel">
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+          <div class="ts-metric-card text-center">
+            <p class="text-uppercase text-muted small mb-1">Members</p>
+            <h4 class="fw-bold mb-0"><%= @trip.users.count %></h4>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="ts-metric-card text-center">
+            <p class="text-uppercase text-muted small mb-1">Expenses</p>
+            <h4 class="fw-bold mb-0"><%= @trip.expenses.count %></h4>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="ts-metric-card text-center">
+            <p class="text-uppercase text-muted small mb-1">Total Spent</p>
+            <h4 class="fw-bold mb-0">₹<%= number_with_delimiter(@trip.expenses.sum(:amount)) %></h4>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="ts-metric-card text-center">
+            <p class="text-uppercase text-muted small mb-1">Status</p>
+            <h4 class="fw-bold mb-0"><%= @trip.status.capitalize %></h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-lg-8">
+          <div class="ts-card ts-card-body h-100">
+            <h5 class="fw-bold mb-3">Quick actions</h5>
+            <div class="row g-3">
+              <div class="col-6 col-md-3">
+                <%= link_to trip_balances_path(@trip), class: "ts-metric-card ts-hover d-block text-center text-decoration-none text-dark" do %>
+                  <i class="bi bi-pie-chart-fill fs-3 mb-2 text-primary"></i>
+                  <div class="fw-bold small">Balances</div>
+                <% end %>
+              </div>
+              <div class="col-6 col-md-3">
+                <%= link_to trip_settlements_path(@trip), class: "ts-metric-card ts-hover d-block text-center text-decoration-none text-dark" do %>
+                  <i class="bi bi-arrow-left-right fs-3 mb-2 text-warning"></i>
+                  <div class="fw-bold small">Settlements</div>
+                <% end %>
+              </div>
+              <div class="col-6 col-md-3">
+                <%= link_to new_trip_expense_path(@trip), class: "ts-metric-card ts-hover d-block text-center text-decoration-none text-dark" do %>
+                  <i class="bi bi-plus-circle-fill fs-3 mb-2 text-success"></i>
+                  <div class="fw-bold small">Add Expense</div>
+                <% end %>
+              </div>
+              <div class="col-6 col-md-3">
+                <%= link_to trip_expenses_path(@trip), class: "ts-metric-card ts-hover d-block text-center text-decoration-none text-dark" do %>
+                  <i class="bi bi-receipt fs-3 mb-2 text-info"></i>
+                  <div class="fw-bold small">All Expenses</div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <div class="ts-card ts-card-body h-100 d-flex flex-column">
+            <h5 class="fw-bold mb-3">Trip actions</h5>
+            <div class="d-flex flex-column gap-2">
+              <% if is_owner %>
+                <%= link_to edit_trip_path(@trip), class: "btn btn-light text-start" do %>
+                  <i class="bi bi-pencil me-1"></i> Edit Trip
+                <% end %>
+                <%= button_to end_trip_trip_path(@trip),
+                      method: :patch,
+                      class: "btn btn-outline-danger text-start w-100",
+                      data: { turbo_confirm: "Are you sure you want to end this trip? This will generate the final settlement." } do %>
+                  <i class="bi bi-flag-fill me-1"></i> End Trip
+                <% end %>
+              <% end %>
+              <% if @trip.ended? || @trip.closed? %>
+                <%= link_to final_settlement_trip_path(@trip), class: "btn btn-primary text-start" do %>
+                  <i class="bi bi-file-earmark-check me-1"></i> Final Settlement
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== MEMBERS ===================== -->
+    <div class="tab-pane fade" id="tab-members" role="tabpanel">
+      <div class="row g-3">
+        <div class="col-12 col-lg-7">
+          <div class="ts-card ts-card-flush">
+            <div class="ts-card-header">
+              <h5 class="mb-0">Members</h5>
+              <span class="ts-chip ts-chip-primary"><%= @trip.users.count %> total</span>
+            </div>
+            <ul class="list-group list-group-flush">
+              <% @trip.memberships.includes(:user).each do |membership| %>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 border-0 border-bottom">
+                  <div class="d-flex align-items-center gap-3">
+                    <span class="ts-avatar"><%= membership.user.name.to_s.first.to_s.upcase %></span>
+                    <div>
+                      <strong><%= membership.user.name %></strong>
+                      <div class="small text-muted"><%= membership.user.email %></div>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="ts-chip <%= membership.role == 'owner' ? 'ts-chip-primary' : 'ts-chip-muted' %>">
+                      <%= membership.role.capitalize %>
+                    </span>
+                    <% if is_owner && membership.role != "owner" %>
+                      <%= button_to trip_membership_path(@trip, membership),
+                            method: :delete,
+                            class: "btn btn-sm btn-light text-danger",
+                            data: { turbo_confirm: "Remove this member?" },
+                            form: { class: "m-0" } do %>
+                        <i class="bi bi-person-dash"></i>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+
+        <% if is_owner %>
+          <div class="col-12 col-lg-5">
+            <div class="ts-card ts-card-body h-100">
+              <h5 class="fw-bold mb-1"><i class="bi bi-link-45deg me-1"></i>Invite Members</h5>
+              <p class="text-muted small mb-3">Share this link so others can request to join.</p>
+
+              <div class="ts-copy-field mb-3">
+                <input type="text" id="invite_link" class="form-control" value="<%= join_trip_url(token: @trip.join_token) %>" readonly>
+                <button type="button" class="ts-copy-btn" data-ts-copy="#invite_link" aria-label="Copy invite link">
+                  <i class="bi bi-clipboard"></i>
+                </button>
+              </div>
+
+              <%= link_to "https://wa.me/?text=#{CGI.escape("Join my TripSplit trip!\n\n#{join_trip_url(token: @trip.join_token)}")}",
+                    target: "_blank", rel: "noopener", class: "btn btn-success w-100" do %>
+                <i class="bi bi-whatsapp me-1"></i> Share on WhatsApp
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- ===================== EXPENSES ===================== -->
+    <div class="tab-pane fade" id="tab-expenses" role="tabpanel">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="fw-bold mb-0">Expenses</h5>
+        <%= link_to new_trip_expense_path(@trip), class: "btn btn-primary btn-sm" do %>
+          <i class="bi bi-plus-lg me-1"></i> Add Expense
+        <% end %>
+      </div>
+
+      <% if @trip.expenses.any? %>
+        <div class="row g-3">
+          <% @trip.expenses.order(spent_on: :desc).each do |expense| %>
+            <div class="col-12">
+              <div class="ts-card ts-card-body">
+                <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-2">
+                  <div>
+                    <h6 class="fw-bold mb-1"><%= expense.title %></h6>
+                    <span class="ts-chip ts-chip-info"><%= expense.category %></span>
+                  </div>
+                  <div class="text-end">
+                    <div class="fw-bold text-success fs-5">₹<%= number_with_delimiter(expense.amount) %></div>
+                    <div class="small text-muted"><%= expense.spent_on %></div>
+                  </div>
+                </div>
+                <p class="small text-muted mb-2"><i class="bi bi-person me-1"></i>Paid by <strong><%= expense.payer.name %></strong></p>
+
+                <% if expense.expense_splits.any? %>
+                  <div class="ts-table-wrap mt-3">
+                    <table class="table ts-table ts-table-responsive-cards mb-0">
+                      <thead>
+                        <tr><th>Member</th><th>Share</th></tr>
+                      </thead>
+                      <tbody>
+                        <% expense.expense_splits.each do |split| %>
+                          <tr>
+                            <td data-label="Member"><%= split.user.name %></td>
+                            <td data-label="Share">₹<%= number_with_delimiter(split.amount) %></td>
+                          </tr>
+                        <% end %>
+                      </tbody>
+                    </table>
+                  </div>
+                <% else %>
+                  <div class="alert alert-warning mb-0 mt-2">This expense has not been split yet.</div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="ts-card">
+          <div class="ts-empty">
+            <div class="ts-empty-icon"><i class="bi bi-receipt"></i></div>
+            <h5>No expenses added yet</h5>
+            <p>Add the first expense for this trip to start splitting costs.</p>
+            <%= link_to new_trip_expense_path(@trip), class: "btn btn-primary" do %>
+              <i class="bi bi-plus-lg me-1"></i> Add Expense
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- ===================== JOIN REQUESTS ===================== -->
+    <% if is_owner %>
+      <div class="tab-pane fade" id="tab-requests" role="tabpanel">
+        <h5 class="fw-bold mb-3">Pending Join Requests</h5>
+
+        <% if pending_requests.any? %>
+          <div class="row g-3">
+            <% pending_requests.each do |request| %>
+              <div class="col-12 col-md-6">
+                <div class="ts-card ts-card-body h-100">
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="ts-avatar"><%= request.user.name.to_s.first.to_s.upcase %></span>
+                    <div>
+                      <h6 class="mb-0 fw-bold"><%= request.user.name %></h6>
+                      <div class="small text-muted"><%= request.user.email %></div>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <%= button_to accept_join_request_path(request), method: :patch, class: "btn btn-success flex-fill", form: { class: "flex-fill m-0" } do %>
+                      <i class="bi bi-check-lg me-1"></i> Accept
+                    <% end %>
+                    <%= button_to reject_join_request_path(request), method: :patch, class: "btn btn-outline-danger flex-fill", form: { class: "flex-fill m-0" } do %>
+                      <i class="bi bi-x-lg me-1"></i> Reject
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="ts-card">
+            <div class="ts-empty">
+              <div class="ts-empty-icon"><i class="bi bi-person-check"></i></div>
+              <h5>No pending join requests</h5>
+              <p>When someone requests to join using your invite link, they'll show up here.</p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+</div>

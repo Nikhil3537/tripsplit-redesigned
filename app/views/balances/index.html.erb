@@ -1,0 +1,92 @@
+<% content_for :title, "Balances — #{@trip.name} — TripSplit" %>
+
+<div class="container ts-shell ts-page">
+
+  <div class="mb-3">
+    <%= link_to trip_path(@trip), class: "text-decoration-none small fw-bold text-muted" do %>
+      <i class="bi bi-arrow-left me-1"></i> Back to <%= @trip.name %>
+    <% end %>
+  </div>
+
+  <div class="ts-page-header">
+    <div>
+      <p class="ts-eyebrow">Who Owes What</p>
+      <h1 class="ts-page-title">Trip Balances</h1>
+      <p class="ts-page-subtitle">A real-time breakdown of every member's balance for <%= @trip.name %>.</p>
+    </div>
+    <%= link_to trip_settlements_path(@trip), class: "btn btn-light" do %>
+      <i class="bi bi-arrow-left-right me-1"></i> View Settlements
+    <% end %>
+  </div>
+
+  <% if @balances.any? %>
+    <div class="row g-3 mb-4">
+      <% @balances.each do |user, data| %>
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="ts-metric-card h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <span class="ts-avatar"><%= user.name.to_s.first.to_s.upcase %></span>
+              <div>
+                <h6 class="mb-0 fw-bold"><%= user.name %></h6>
+                <span class="small text-muted">Paid ₹<%= number_with_delimiter(data[:paid]) %> · Share ₹<%= number_with_delimiter(data[:share]) %></span>
+              </div>
+            </div>
+            <% if data[:balance] > 0 %>
+              <span class="ts-chip ts-chip-success w-100 justify-content-center py-2">
+                <i class="bi bi-arrow-down-circle-fill"></i> Should receive ₹<%= number_with_delimiter(data[:balance]) %>
+              </span>
+            <% elsif data[:balance] < 0 %>
+              <span class="ts-chip ts-chip-danger w-100 justify-content-center py-2">
+                <i class="bi bi-arrow-up-circle-fill"></i> Owes ₹<%= number_with_delimiter(data[:balance].abs) %>
+              </span>
+            <% else %>
+              <span class="ts-chip ts-chip-muted w-100 justify-content-center py-2">
+                <i class="bi bi-check-circle-fill"></i> Settled up
+              </span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="ts-table-wrap">
+      <table class="table ts-table ts-table-responsive-cards mb-0">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Paid</th>
+            <th>Share</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @balances.each do |user, data| %>
+            <tr>
+              <td data-label="Member"><%= user.name %></td>
+              <td data-label="Paid">₹<%= number_with_delimiter(data[:paid]) %></td>
+              <td data-label="Share">₹<%= number_with_delimiter(data[:share]) %></td>
+              <td data-label="Balance">
+                <% if data[:balance] > 0 %>
+                  <span class="text-success fw-bold">+₹<%= number_with_delimiter(data[:balance]) %></span>
+                <% elsif data[:balance] < 0 %>
+                  <span class="text-danger fw-bold">-₹<%= number_with_delimiter(data[:balance].abs) %></span>
+                <% else %>
+                  <span class="text-muted">Settled</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="ts-card">
+      <div class="ts-empty">
+        <div class="ts-empty-icon"><i class="bi bi-pie-chart"></i></div>
+        <h5>No balances to show</h5>
+        <p>Add some expenses to this trip to see how balances break down between members.</p>
+      </div>
+    </div>
+  <% end %>
+
+</div>

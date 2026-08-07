@@ -1,0 +1,27 @@
+<% content_for :title, "New Trip — TripSplit" %>
+
+<div class="container ts-shell ts-page">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-7">
+
+      <div class="mb-4">
+        <%= link_to trips_path, class: "text-decoration-none small fw-bold text-muted" do %>
+          <i class="bi bi-arrow-left me-1"></i> Back to My Trips
+        <% end %>
+      </div>
+
+      <div class="ts-card ts-fade-in">
+        <div class="ts-card-header">
+          <div>
+            <h4 class="mb-0"><i class="bi bi-airplane-fill text-primary me-2"></i>Create a New Trip</h4>
+            <p class="text-muted small mb-0 mt-1">Set the basics — you can invite members right after.</p>
+          </div>
+        </div>
+        <div class="ts-card-body">
+          <%= render "form" %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

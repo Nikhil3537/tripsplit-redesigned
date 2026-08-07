@@ -1,0 +1,186 @@
+<% content_for :title, "TripSplit — Split trip expenses, effortlessly" %>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="ts-landing-hero pt-5 pb-5">
+  <div class="container ts-shell py-5">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="badge rounded-pill bg-white bg-opacity-25 text-white px-3 py-2 mb-3">
+          <i class="bi bi-stars me-1"></i> Built for group trips
+        </span>
+        <h1 class="display-5 fw-bold text-white mb-3">Split trip expenses without the awkward math.</h1>
+        <p class="fs-5 text-white-50 mb-4">TripSplit keeps every rupee organized — who paid, who owes, and who's settled up — so your group can focus on the trip, not the spreadsheet.</p>
+        <div class="d-flex flex-wrap gap-3">
+          <%= link_to new_user_path, class: "btn btn-light btn-lg fw-bold" do %>
+            <i class="bi bi-rocket-takeoff me-1"></i> Get Started Free
+          <% end %>
+          <%= link_to new_session_path, class: "btn btn-outline-light btn-lg" do %>
+            Log In
+          <% end %>
+        </div>
+        <div class="d-flex align-items-center gap-4 mt-4 text-white-50 small">
+          <span><i class="bi bi-check-circle-fill me-1"></i> No credit card needed</span>
+          <span><i class="bi bi-check-circle-fill me-1"></i> Free forever</span>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="ts-mockup-card p-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <p class="text-uppercase text-muted small mb-1">Goa Trip 2026</p>
+              <h4 class="fw-bold mb-0">₹48,250 <span class="fs-6 text-muted fw-normal">total spent</span></h4>
+            </div>
+            <span class="ts-avatar"><i class="bi bi-airplane-fill"></i></span>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <div class="ts-metric-card">
+                <p class="text-uppercase text-muted small mb-1">You are owed</p>
+                <h5 class="fw-bold text-success mb-0">₹3,420</h5>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="ts-metric-card">
+                <p class="text-uppercase text-muted small mb-1">You owe</p>
+                <h5 class="fw-bold text-danger mb-0">₹1,180</h5>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-between p-3 ts-soft-panel rounded-3 mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="ts-mini-avatar" style="margin-left:0;">RA</span>
+              <span class="fw-semibold small">Riya paid for Hotel</span>
+            </div>
+            <span class="fw-bold small">₹9,600</span>
+          </div>
+          <div class="d-flex align-items-center justify-content-between p-3 ts-soft-panel rounded-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="ts-mini-avatar" style="margin-left:0;">KP</span>
+              <span class="fw-semibold small">Karan paid for Dinner</span>
+            </div>
+            <span class="fw-bold small">₹2,340</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURES
+     ============================================================ -->
+<section class="py-5">
+  <div class="container ts-shell py-4">
+    <div class="text-center mb-5">
+      <p class="ts-eyebrow">Why TripSplit</p>
+      <h2 class="fw-bold">Everything a group trip needs, in one place</h2>
+      <p class="text-muted">From adding an expense to the final settlement, TripSplit handles the numbers so you don't have to.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="ts-card ts-hover ts-card-body h-100">
+          <span class="ts-feature-icon" style="background: var(--ts-gradient-primary);"><i class="bi bi-people-fill"></i></span>
+          <h5 class="fw-bold">Group trips, done right</h5>
+          <p class="text-muted mb-0">Create a trip, invite members with a shareable link, and manage join requests with one click.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="ts-card ts-hover ts-card-body h-100">
+          <span class="ts-feature-icon" style="background: var(--ts-gradient-green);"><i class="bi bi-receipt"></i></span>
+          <h5 class="fw-bold">Smart expense splitting</h5>
+          <p class="text-muted mb-0">Log an expense, pick who's in, and TripSplit calculates each person's fair share instantly.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="ts-card ts-hover ts-card-body h-100">
+          <span class="ts-feature-icon" style="background: linear-gradient(135deg,#7c3aed,#db2777);"><i class="bi bi-pie-chart-fill"></i></span>
+          <h5 class="fw-bold">Clear balances</h5>
+          <p class="text-muted mb-0">See exactly who owes who at a glance, with category breakdowns and running totals.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="ts-card ts-hover ts-card-body h-100">
+          <span class="ts-feature-icon" style="background: linear-gradient(135deg,#0ea5e9,#14b8a6);"><i class="bi bi-arrow-left-right"></i></span>
+          <h5 class="fw-bold">One-tap settlements</h5>
+          <p class="text-muted mb-0">Mark payments as complete and keep a clean record of every settlement in the group.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="ts-card ts-hover ts-card-body h-100">
+          <span class="ts-feature-icon" style="background: var(--ts-gradient-warm);"><i class="bi bi-flag-fill"></i></span>
+          <h5 class="fw-bold">Final settlement report</h5>
+          <p class="text-muted mb-0">End a trip and get a complete, downloadable summary of expenses and who paid whom.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="ts-card ts-hover ts-card-body h-100">
+          <span class="ts-feature-icon" style="background: linear-gradient(135deg,#1e293b,#0f172a);"><i class="bi bi-phone"></i></span>
+          <h5 class="fw-bold">Works everywhere</h5>
+          <p class="text-muted mb-0">A responsive, installable app that feels just as good on your phone as your laptop.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     HOW IT WORKS
+     ============================================================ -->
+<section class="py-5 ts-soft-panel border-0" style="border-radius:0;">
+  <div class="container ts-shell py-4">
+    <div class="text-center mb-5">
+      <p class="ts-eyebrow">How it works</p>
+      <h2 class="fw-bold">Up and running in three steps</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="d-flex align-items-start gap-3">
+          <span class="ts-step-num">1</span>
+          <div>
+            <h5 class="fw-bold mb-1">Create a trip</h5>
+            <p class="text-muted mb-0">Add a name, destination, and dates — TripSplit sets up the trip in seconds.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex align-items-start gap-3">
+          <span class="ts-step-num">2</span>
+          <div>
+            <h5 class="fw-bold mb-1">Invite your group</h5>
+            <p class="text-muted mb-0">Share your invite link and approve join requests as members arrive.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="d-flex align-items-start gap-3">
+          <span class="ts-step-num">3</span>
+          <div>
+            <h5 class="fw-bold mb-1">Track & settle up</h5>
+            <p class="text-muted mb-0">Log expenses as you go, then settle balances with a tap when the trip ends.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA
+     ============================================================ -->
+<section class="py-5">
+  <div class="container ts-shell py-4">
+    <div class="ts-hero p-5 text-center">
+      <div class="ts-hero-content">
+        <h2 class="fw-bold text-white mb-3">Ready to stop chasing people for money?</h2>
+        <p class="text-white-50 mb-4">Create your first trip and invite your group — it's free.</p>
+        <%= link_to new_user_path, class: "btn btn-light btn-lg fw-bold" do %>
+          <i class="bi bi-rocket-takeoff me-1"></i> Create your account
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

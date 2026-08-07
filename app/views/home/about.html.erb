@@ -1,0 +1,41 @@
+<% content_for :title, "About — TripSplit" %>
+
+<div class="container ts-shell ts-page">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 text-center mb-5">
+      <p class="ts-eyebrow">About TripSplit</p>
+      <h1 class="fw-bold mb-3">A private, no-nonsense trip expense manager.</h1>
+      <p class="text-muted fs-5">TripSplit was built to solve one problem: keeping shared trip expenses fair and transparent, without spreadsheets or awkward reminders.</p>
+    </div>
+  </div>
+
+  <div class="row g-4 justify-content-center">
+    <div class="col-md-4">
+      <div class="ts-card ts-hover ts-card-body text-center h-100">
+        <span class="ts-feature-icon mx-auto" style="background: var(--ts-gradient-primary);"><i class="bi bi-eye"></i></span>
+        <h5 class="fw-bold">Transparent</h5>
+        <p class="text-muted mb-0">Every member sees the same balances — no guesswork, no hidden math.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ts-card ts-hover ts-card-body text-center h-100">
+        <span class="ts-feature-icon mx-auto" style="background: var(--ts-gradient-green);"><i class="bi bi-lightning-charge"></i></span>
+        <h5 class="fw-bold">Fast</h5>
+        <p class="text-muted mb-0">Log an expense in seconds and let TripSplit handle the split automatically.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ts-card ts-hover ts-card-body text-center h-100">
+        <span class="ts-feature-icon mx-auto" style="background: linear-gradient(135deg,#7c3aed,#db2777);"><i class="bi bi-lock"></i></span>
+        <h5 class="fw-bold">Private</h5>
+        <p class="text-muted mb-0">Trips are invite-only — only members you approve can see or add expenses.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-5">
+    <%= link_to root_path, class: "btn btn-primary btn-lg" do %>
+      <i class="bi bi-arrow-left me-1"></i> Back to TripSplit
+    <% end %>
+  </div>
+</div>

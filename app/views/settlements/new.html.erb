@@ -1,0 +1,42 @@
+<% content_for :title, "New Settlement — TripSplit" %>
+
+<div class="container ts-shell ts-page">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-6">
+
+      <div class="ts-card">
+        <div class="ts-card-header">
+          <h4 class="mb-0"><i class="bi bi-arrow-left-right text-primary me-2"></i>New Settlement</h4>
+        </div>
+        <div class="ts-card-body">
+          <%= form_with model: [@trip, @settlement] do |f| %>
+
+            <div class="mb-3">
+              <%= f.label :payer_id, class: "form-label" %>
+              <%= f.collection_select :payer_id, @trip.users, :id, :name, {}, class: "form-select" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :receiver_id, class: "form-label" %>
+              <%= f.collection_select :receiver_id, @trip.users, :id, :name, {}, class: "form-select" %>
+            </div>
+
+            <div class="mb-3">
+              <%= f.label :amount, class: "form-label" %>
+              <div class="ts-input-group">
+                <i class="bi bi-currency-rupee ts-input-icon"></i>
+                <%= f.number_field :amount, step: 0.01, class: "form-control" %>
+              </div>
+            </div>
+
+            <div class="d-grid mt-4">
+              <%= f.submit "Create Settlement", class: "btn btn-primary" %>
+            </div>
+
+          <% end %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,268 @@
+<% content_for :title, "Dashboard — TripSplit" %>
+
+<div class="container ts-shell ts-page">
+
+  <!-- Page header -->
+  <div class="ts-page-header">
+    <div>
+      <p class="ts-eyebrow">Welcome back</p>
+      <h1 class="ts-page-title"><%= @user.name %> 👋</h1>
+      <p class="ts-page-subtitle">Here's what's happening across your trips.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <%= link_to new_trip_path, class: "btn btn-primary" do %>
+        <i class="bi bi-plus-lg me-1"></i> New Trip
+      <% end %>
+      <%= link_to trips_path, class: "btn btn-light" do %>
+        <i class="bi bi-compass me-1"></i> My Trips
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Hero balance summary -->
+  <section class="ts-hero mb-4 ts-fade-in">
+    <div class="row g-0">
+      <div class="col-lg-6 p-4 p-lg-5 ts-hero-content">
+        <p class="text-uppercase text-white-50 mb-2 small fw-bold">Balance overview</p>
+        <h2 class="fw-bold text-white mb-3">Total spend across all trips: ₹<%= number_with_delimiter(@total_expenses) %></h2>
+        <p class="text-white-50 mb-4">You've personally paid ₹<%= number_with_delimiter(@total_paid) %> so far. Here's how the balance looks.</p>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge rounded-pill bg-white text-dark px-3 py-2"><i class="bi bi-airplane-fill me-1 text-primary"></i> Active trips: <strong><%= @active_trips %></strong></span>
+          <span class="badge rounded-pill bg-white text-dark px-3 py-2"><i class="bi bi-flag-fill me-1 text-success"></i> Completed: <strong><%= @completed_trips %></strong></span>
+        </div>
+      </div>
+      <div class="col-lg-6 p-4 p-lg-5">
+        <div class="ts-hero-glass p-4">
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="ts-metric-card text-center h-100">
+                <p class="text-uppercase text-muted small mb-1">You Owe</p>
+                <h3 class="fw-bold text-danger mb-0">₹<%= number_with_delimiter(@you_owe.round(2)) %></h3>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="ts-metric-card text-center h-100">
+                <p class="text-uppercase text-muted small mb-1">You Receive</p>
+                <h3 class="fw-bold text-success mb-0">₹<%= number_with_delimiter(@you_receive.round(2)) %></h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stat cards -->
+  <section class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="ts-stat-card ts-stat-blue">
+        <span class="ts-stat-icon"><i class="bi bi-airplane-fill"></i></span>
+        <div class="ts-stat-value"><%= @total_trips %></div>
+        <div class="ts-stat-label">Total Trips</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="ts-stat-card ts-stat-purple">
+        <span class="ts-stat-icon"><i class="bi bi-people-fill"></i></span>
+        <div class="ts-stat-value"><%= @total_members %></div>
+        <div class="ts-stat-label">Members</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="ts-stat-card ts-stat-teal">
+        <span class="ts-stat-icon"><i class="bi bi-person-check-fill"></i></span>
+        <div class="ts-stat-value"><%= @joined_trips %></div>
+        <div class="ts-stat-label">Joined Trips</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="ts-stat-card ts-stat-green">
+        <span class="ts-stat-icon"><i class="bi bi-wallet2"></i></span>
+        <div class="ts-stat-value">₹<%= number_with_delimiter(@total_expenses) %></div>
+        <div class="ts-stat-label">Total Expenses</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="row g-3 mb-4">
+    <div class="col-12 col-lg-6">
+      <div class="ts-card h-100">
+        <div class="ts-card-header">
+          <h5 class="mb-0">Category Spending</h5>
+          <span class="ts-chip ts-chip-primary"><i class="bi bi-pie-chart-fill"></i> By category</span>
+        </div>
+        <div class="ts-card-body">
+          <% if @category_expenses.present? && @category_total.positive? %>
+            <div style="height: 260px;">
+              <canvas id="ts-category-chart"></canvas>
+            </div>
+            <script type="application/json" id="ts-category-chart-data">
+              <%= raw({ labels: @category_expenses.keys, values: @category_expenses.values }.to_json.gsub('/', '\/')) %>
+            </script>
+          <% else %>
+            <div class="ts-empty py-4">
+              <div class="ts-empty-icon"><i class="bi bi-pie-chart"></i></div>
+              <h5>No expenses yet</h5>
+              <p>Add an expense to a trip to see your category breakdown here.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="ts-card h-100">
+        <div class="ts-card-header">
+          <h5 class="mb-0">Settlement Analytics</h5>
+          <span class="badge bg-info text-white">Updated</span>
+        </div>
+        <div class="ts-card-body">
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <div class="ts-metric-card text-center">
+                <p class="text-uppercase text-muted small mb-2">Pending</p>
+                <h4 class="fw-bold mb-1"><%= @pending_count %></h4>
+                <p class="mb-0 small text-muted">₹<%= number_with_delimiter(@pending_amount) %></p>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="ts-metric-card text-center">
+                <p class="text-uppercase text-muted small mb-2">Completed</p>
+                <h4 class="fw-bold mb-1"><%= @completed_count %></h4>
+                <p class="mb-0 small text-muted">₹<%= number_with_delimiter(@completed_amount) %></p>
+              </div>
+            </div>
+          </div>
+
+          <% if @total_settlement_amount.positive? %>
+            <div style="height: 160px;">
+              <canvas id="ts-settlement-chart"></canvas>
+            </div>
+            <script type="application/json" id="ts-settlement-chart-data">
+              <%= raw({ pending: @pending_amount.to_f, completed: @completed_amount.to_f }.to_json) %>
+            </script>
+            <div class="d-flex align-items-center justify-content-between mt-3 mb-1">
+              <span class="small text-muted">Settlement progress</span>
+              <span class="small fw-bold"><%= @settlement_completion %>%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-success" role="progressbar" style="width: <%= @settlement_completion %>%" aria-valuenow="<%= @settlement_completion %>" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          <% else %>
+            <div class="ts-empty py-4">
+              <div class="ts-empty-icon"><i class="bi bi-check2-circle"></i></div>
+              <h5>No settlements yet</h5>
+              <p>Settlements appear here once a trip ends and balances are calculated.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent trips / expenses -->
+  <section class="row g-3 mb-4">
+    <div class="col-12 col-lg-6">
+      <div class="ts-card ts-card-flush h-100">
+        <div class="ts-card-header">
+          <h5 class="mb-0">Recent Trips</h5>
+          <%= link_to "View all", trips_path, class: "small fw-bold text-decoration-none" %>
+        </div>
+        <div class="list-group list-group-flush">
+          <% if @recent_trips.any? %>
+            <% @recent_trips.each do |trip| %>
+              <div class="list-group-item d-flex align-items-center justify-content-between px-4 py-3 border-0 border-bottom">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="ts-avatar"><i class="bi bi-airplane-fill fs-6"></i></span>
+                  <div>
+                    <strong><%= trip.name %></strong>
+                    <div class="small text-muted"><%= trip.destination %></div>
+                  </div>
+                </div>
+                <%= link_to "Open", trip_path(trip), class: "btn btn-sm btn-outline-primary" %>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="ts-empty">
+              <div class="ts-empty-icon"><i class="bi bi-airplane"></i></div>
+              <h5>No trips yet</h5>
+              <p>Create your first trip to start tracking shared expenses.</p>
+              <%= link_to "Create a Trip", new_trip_path, class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="ts-card ts-card-flush h-100">
+        <div class="ts-card-header">
+          <h5 class="mb-0">Recent Expenses</h5>
+        </div>
+        <div class="list-group list-group-flush">
+          <% if @recent_expenses.any? %>
+            <% @recent_expenses.each do |expense| %>
+              <div class="list-group-item d-flex align-items-center justify-content-between px-4 py-3 border-0 border-bottom">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="ts-metric-icon" style="background: var(--ts-gradient-green); width:40px;height:40px;"><i class="bi bi-receipt"></i></span>
+                  <div>
+                    <strong><%= expense.title %></strong>
+                    <div class="small text-muted"><%= expense.trip.name %></div>
+                  </div>
+                </div>
+                <span class="fw-bold text-primary">₹<%= number_with_delimiter(expense.amount) %></span>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="ts-empty">
+              <div class="ts-empty-icon"><i class="bi bi-receipt"></i></div>
+              <h5>No expenses added</h5>
+              <p>Expenses you add to any trip will show up here.</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick actions -->
+  <section class="ts-card ts-card-body mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h5 class="mb-1">Quick actions</h5>
+        <p class="text-muted small mb-0">Launch the most common tasks instantly.</p>
+      </div>
+      <span class="badge bg-primary text-white">Fast</span>
+    </div>
+    <div class="row g-3">
+      <div class="col-12 col-sm-6 col-xl-3">
+        <%= link_to new_trip_path, class: "ts-metric-card ts-hover d-block text-center text-decoration-none text-dark" do %>
+          <i class="bi bi-plus-circle-fill fs-2 mb-2 text-primary"></i>
+          <div class="fw-bold">New Trip</div>
+        <% end %>
+      </div>
+      <% if @recent_trips.any? %>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <%= link_to new_trip_expense_path(@recent_trips.first), class: "ts-metric-card ts-hover d-block text-center text-decoration-none text-dark" do %>
+            <i class="bi bi-wallet2 fs-2 mb-2 text-success"></i>
+            <div class="fw-bold">Add Expense</div>
+          <% end %>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+          <%= link_to trip_settlements_path(@recent_trips.first), class: "ts-metric-card ts-hover d-block text-center text-decoration-none text-dark" do %>
+            <i class="bi bi-receipt-cutoff fs-2 mb-2 text-warning"></i>
+            <div class="fw-bold">Settlements</div>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <%= link_to trips_path, class: "ts-metric-card ts-hover d-block text-center text-decoration-none text-dark" do %>
+          <i class="bi bi-grid-3x3-gap-fill fs-2 mb-2 text-secondary"></i>
+          <div class="fw-bold">All Trips</div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+</div>
